@@ -15,7 +15,7 @@
     }
     #contenedor p.fuente.parrafo{
       opacity: 100%;
-      color: #000;
+      color: #000 !important;
     }
     .complicado{
       font-weight: bold !important;
