@@ -1,7 +1,7 @@
     .titulo{
       text-align: center;
     }
-    html body p{
+    html #contenedor p{
       font-family: serif;
     }
     body  #primer-parrafo{
