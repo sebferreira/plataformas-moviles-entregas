@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tablero de Puntos - DOM y JavaScript</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="container my-1 my-sm-2 my-md-4 my-lg-5">
+    <h1>Tablero de Puntos</h1>
+    <div class="card">
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-5">
+            <span class="display-1">0</span>
+            <p class="m-0">Local</p>
+          </div>
+          <div class="col-2">
+            <span class="display-1">:</span>
+          </div>
+          <div class="col-5">
+            <span class="display-1">0</span>
+            <p class="m-0">Visitante</p>
+          </div>
+        </div>
+
+        <hr class="hr">
+
+        <h2>Actualizar Contador</h2>
+        <div class="row">
+          <div class="col-12 col-sm-4 my-1">
+            <button class="btn d-block w-100 btn-primary">
+              Punto Local
+            </button>
+          </div>
+          <div class="col-12 col-sm-4 my-1">
+            <button class="btn d-block w-100 btn-primary">
+              Punto Visitante
+            </button>
+          </div>
+          <div class="col-12 col-sm-4 my-1">
+            <button class="btn d-block w-100 btn-danger">
+              Reinicio
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    const scoreLocal = document.querySelectorAll('.display-1')[0];
+    const scoreVisitante = document.querySelectorAll('.display-1')[2];
+    const btnReset = document.querySelector('.btn-danger');
+    const btnLocalAumentar = document.querySelectorAll('.btn')[0];
+    const btnVisitanteAumentar = document.querySelectorAll('.btn')[1];
+    btnLocalAumentar.innerHTML = "Aumentar punto Local"
+    btnVisitanteAumentar.innerHTML = "Aumentar punto Visitante"
+
+
+    const divRow = document.querySelectorAll(".row")[1]
+    const btnLocalDecrementar = divRow.firstElementChild.cloneNode(true)
+    const btnVisitanteDecrementar = divRow.firstElementChild.cloneNode(true)
+    const finalizar = divRow.lastElementChild.cloneNode(true)
+    const invertirPuntaje = divRow.lastElementChild.cloneNode(true)
+    invertirPuntaje.childNodes[1].innerHTML = "Invertir Puntajes"
+    invertirPuntaje.childNodes[1].className = ""
+    invertirPuntaje.className = ""
+    invertirPuntaje.childNodes[1].classList.add("btn", "d-block", "w-100", "btn-warning")
+    finalizar.childNodes[1].innerHTML = "Finalizar Partido"
+    btnVisitanteDecrementar.childNodes[1].innerHTML = "Decrementar punto Visitante"
+    btnLocalDecrementar.childNodes[1].innerHTML = "Decrementar punto Local"
+    divRow.insertAdjacentElement('beforeend', btnLocalDecrementar)
+    divRow.insertAdjacentElement('beforeend', btnVisitanteDecrementar)
+    divRow.insertAdjacentElement('beforeend', finalizar)
+    divRow.insertAdjacentElement('beforeend', invertirPuntaje)
+
+    let puntosLocal = 0;
+    let puntosVisitante = 0;
+    let puntosLocalInvertido = 0;
+
+
+    function handleMarcador(e) {
+      if (e.target === btnLocalAumentar) {
+        puntosLocal++;
+        scoreLocal.innerHTML = puntosLocal;
+      }
+      if (e.target === btnVisitanteAumentar) {
+        puntosVisitante++;
+        scoreVisitante.innerHTML = puntosVisitante;
+      }
+      if (e.target === btnReset) {
+        puntosLocal = 0;
+        puntosVisitante = 0;
+        scoreLocal.innerHTML = puntosLocal;
+        scoreVisitante.innerHTML = puntosVisitante;
+        btnLocalAumentar.disabled = false;
+        btnVisitanteAumentar.disabled = false;
+        btnLocalDecrementar.childNodes[1].disabled = false;
+        btnVisitanteDecrementar.childNodes[1].disabled = false;
+        invertirPuntaje.childNodes[1].disabled = false;
+
+      }
+      if (puntosLocal > 0) {
+        if (e.target === btnLocalDecrementar.childNodes[1]) {
+          puntosLocal--;
+          scoreLocal.innerHTML = puntosLocal;
+        }
+      }
+      if (puntosVisitante > 0) {
+        if (e.target === btnVisitanteDecrementar.childNodes[1]) {
+          puntosVisitante--;
+          scoreVisitante.innerHTML = puntosVisitante;
+        }
+      }
+      if (e.target === finalizar.childNodes[1]) {
+        alert("Partido Finalizado!")
+        btnLocalAumentar.disabled = true;
+        btnVisitanteAumentar.disabled = true;
+        btnLocalDecrementar.childNodes[1].disabled = true;
+        btnVisitanteDecrementar.childNodes[1].disabled = true;
+        invertirPuntaje.childNodes[1].disabled = true;
+      }
+      if (e.target === invertirPuntaje.childNodes[1]) {
+        puntosLocalInvertido = puntosLocal
+        puntosLocal = puntosVisitante
+        puntosVisitante = puntosLocalInvertido
+        scoreLocal.innerHTML = puntosLocal
+        scoreVisitante.innerHTML = puntosVisitante
+      }
+    }
+
+    btnLocalAumentar.addEventListener('click', handleMarcador);
+    btnVisitanteAumentar.addEventListener('click', handleMarcador);
+    btnLocalDecrementar.childNodes[1].addEventListener('click', handleMarcador);
+    btnVisitanteDecrementar.childNodes[1].addEventListener('click', handleMarcador);
+    btnReset.addEventListener('click', handleMarcador);
+    finalizar.childNodes[1].addEventListener('click', handleMarcador);
+    invertirPuntaje.childNodes[1].addEventListener('click', handleMarcador)
+
+  </script>
+</body>
+
+</html>
