@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lista de Contactos - DOM y JavaScript</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="container my-1 my-sm-2 my-md-4 my-lg-5">
+    <h1>Lista de Contactos</h1>
+    <div class="card">
+      <div class="card-body">
+        <h2>Contactos</h2>
+
+        <ul id="lista-contactos"></ul>
+
+        <hr class="hr">
+
+        <h2>Nuevo Contacto</h2>
+        <form id="form-producto">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" name="nombre" id="input-nombre" placeholder="Nombre"
+              aria-label="Nombre">
+            <input type="text" class="form-control" name="apellido" id="input-apellido" placeholder="Apellido"
+              aria-label="Apellido">
+          </div>
+          <button class="btn btn-primary" type="submit">Agregar Contacto</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    let contactos = [
+      {
+        nombre: 'Juan',
+        apellido: 'Perez',
+        telefono: 1123324311
+      },
+    ];
+    let contactosFavoritos = []
+
+    function checkboxExist() {
+      const checkbox = document.getElementsByClassName('favorito')
+      Array.from(checkbox).forEach((item) => {
+        item.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            const nombre = (e.target.parentElement.children[0].innerHTML)
+            const apellido = (e.target.parentElement.children[1].innerHTML)
+            const telefono = (e.target.parentElement.children[2].innerHTML)
+            const index = contactosFavoritos.findIndex((item) => item.nombre === nombre && item.apellido === apellido && item.telefono === telefono)
+            if (index !== -1) {
+              contactosFavoritos.splice(index, 1)
+            }
+            contactosFavoritos.push({ nombre, apellido, telefono, isChecked: e.target.checked })
+          } else {
+            const nombre = (e.target.parentElement.children[0].innerHTML)
+            const apellido = (e.target.parentElement.children[1].innerHTML)
+            const telefono = (e.target.parentElement.children[2].innerHTML)
+            const index = contactosFavoritos.findIndex((item) => item.nombre === nombre && item.apellido === apellido && item.telefono === telefono)
+            contactosFavoritos.splice(index, 1)
+          }
+        }
+        )
+      })
+    }
+
+    /**
+     * agregarContacto()
+     * esta función se va a llamar cuando el usuario envía el formulario con el nuevo contacto para agregar.
+     */
+    function agregarContacto(nombre, apellido, telefono) {
+      // su implementación
+      if (nombre && apellido) {
+        if (telefono) {
+          contactos.push({ nombre, apellido, telefono });
+          mostrarListado();
+        } else {
+          alert("Por favor, ingrese un nombre y apellido válidos.")
+          location.reload()
+        }
+      } else {
+        alert("Por favor, ingrese un telefono válido.")
+        location.reload()
+      }
+    }
+
+    /**
+     * mostrarListado()
+     * esta función se encarga de mostrar en el DOM la lista de todos los contactos guardados en la variable global contactos.
+     */
+    function mostrarListado() {
+      // su implementación
+      const listaContactos = document.getElementById('lista-contactos');
+      listaContactos.innerHTML = "";
+      contactos.forEach((contacto) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${contacto.nombre}</span> <span>${contacto.apellido}</span> <span>${contacto.telefono}</span> <span>-Marcar como favorito</span> <input type="checkbox" class="favorito">`;
+        listaContactos.appendChild(li);
+
+        if (contactosFavoritos.length > 0) {
+          for (let persona of contactosFavoritos) {
+
+            if (contacto.nombre === persona.nombre && contacto.apellido === persona.apellido) {
+              if (contacto.telefono === parseInt(persona.telefono)) {
+                li.querySelector('.favorito').checked = true;
+
+              }
+            }
+          }
+        } else {
+
+
+        }
+
+
+      });
+    }
+
+
+
+    function mostrarListadoFavoritos() {
+
+      const listaContactos = document.getElementById('lista-contactos');
+      const ulElement = document.querySelector(".contenedorFavoritos")
+      const title = document.querySelector(".tituloFavoritos")
+      title.innerHTML = "Contactos Favoritos"
+      ulElement.innerHTML = "";
+      contactosFavoritos.forEach((contacto) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${contacto.nombre}</span> <span>${contacto.apellido}</span> <span>${contacto.telefono}</span>`;
+        ulElement.appendChild(li);
+      });
+    }
+
+    function handleOrdenar(e) {
+      e.preventDefault();
+      if (e.target.innerHTML === "Ordenar por Nombre") {
+        contactos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        mostrarListado();
+      }
+      if (e.target.innerHTML === "Ordenar por Apellido") {
+        contactos.sort((a, b) => a.apellido.localeCompare(b.apellido));
+        mostrarListado();
+      }
+    }
+
+    function handlerFormulario(e) {
+      e.preventDefault();
+      const inputNombre = e.target.querySelector('#input-nombre');
+      const inputApellido = e.target.querySelector('#input-apellido');
+      const inputTelefono = e.target.querySelector('#input-telefono');
+
+      const nombre = inputNombre.value;
+      const apellido = inputApellido.value;
+      const telefono = parseInt(inputTelefono.value);
+
+      inputNombre.value = "";
+      inputApellido.value = "";
+      inputTelefono.value = "";
+
+
+      agregarContacto(nombre, apellido, telefono);
+      checkboxExist()
+    }
+
+    mostrarListado()
+    const container = document.querySelector('.card');
+    const form = document.querySelector('#form-producto')
+    const buttonSubmit = form[2]
+    const contenedorButtons = document.createElement("div");
+    const ordenarNombre = document.createElement("button")
+    const ordenarApellido = document.createElement("button")
+    const mostrarFavoritos = document.createElement("button")
+    const lista = document.querySelector("#lista-contactos")
+
+    const contenedorLista = document.createElement("div")
+    const title = document.createElement('h2');
+    const ulElement = document.createElement('ul');
+    ulElement.classList.add("contenedorFavoritos")
+    title.classList.add("tituloFavoritos")
+    title.innerHTML = ''
+    ulElement.innerHTML = "";
+    lista.after(contenedorLista)
+    contenedorLista.append(title, ulElement);
+
+
+    const inputTelefono = document.createElement("input")
+    inputTelefono.type = "tel"
+    inputTelefono.name = "telefono"
+    inputTelefono.placeholder = "Teléfono"
+    inputTelefono.id = "input-telefono"
+    inputTelefono.maxLength = 10
+
+    form.classList.add("d-flex", "flex-column", "align-items-center")
+    buttonSubmit.classList.add("btn", "btn-primary", "w-25", "my-2")
+    contenedorButtons.classList.add("d-flex", "justify-content-center", "my-2", "d-inline")
+    ordenarNombre.classList.add("btn", "btn-primary", "mx-2", "w-25", "btn-sm")
+    ordenarApellido.classList.add("btn", "btn-primary", "mx-2", "w-25", "btn-sm")
+    inputTelefono.classList.add("form-control")
+    mostrarFavoritos.classList.add("btn", "btn-primary", "mx-2", "w-25", "btn-sm")
+
+    ordenarNombre.textContent = "Ordenar por Nombre"
+    ordenarApellido.textContent = "Ordenar por Apellido"
+    mostrarFavoritos.textContent = "Mostrar Favoritos"
+
+    buttonSubmit.before(inputTelefono)
+    container.append(contenedorButtons)
+    contenedorButtons.append(ordenarNombre, ordenarApellido, mostrarFavoritos)
+
+    document.querySelector('form').addEventListener('submit', handlerFormulario);
+    ordenarNombre.addEventListener('click', handleOrdenar)
+    ordenarApellido.addEventListener('click', handleOrdenar)
+    mostrarFavoritos.addEventListener('click', mostrarListadoFavoritos)
+    checkboxExist()
+
+
+  </script>
+</body>
+
+</html>
